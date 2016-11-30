@@ -1,7 +1,7 @@
 var MongoClient = require('mongodb').MongoClient
     , format = require('util').format;
 
-MongoClient.connect('mongodb://127.0.0.1:27017/test', function(err, db) {
+MongoClient.connect('mongodb://test:1234@ds117348.mlab.com:17348/hristo', function(err, db) {
     if(err) throw err;
 
  var fs = require('fs');

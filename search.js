@@ -1,7 +1,7 @@
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
-var url = 'mongodb://localhost:27017/EventsBook';
+var url = 'mongodb://test:1234@ds117348.mlab.com:17348/hristo';
 var express = require('express');
 var app     = express();
 
@@ -12,23 +12,26 @@ app.use('/', function(req, res, next) {
  });
 
 app.get('/:tag', function(req, res){
-
-  
-    
-  
-   var findCoords = function(db, callback) {
+  var findCoords = function(db, callback) {
     var cursor;
     var query = new RegExp(req.params.tag);
-       db.collection('events').find( { name: query }).toArray(	function(err, results){
-   res.json (results);
-  });
-};
+       db.collection('events').aggregate( 
+        [
+        {"$unwind": "$events"},
+        {"$match":{"events.name":query}}
+        ]).toArray(	
+        function(err, results){
+         console.log("results", results);
+         callback();
+         res.json(results);
+        });
+  };
 
-MongoClient.connect(url, function(err, db) {
-  assert.equal(null, err);
-  findCoords(db, function() {
-      db.close();
-  });
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    findCoords(db, function() {
+        db.close();
+    });
 });
   
  
